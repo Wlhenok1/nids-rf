@@ -69,10 +69,11 @@ print(f"Testing samples  : {len(X_test)}")
 # ── STEP 5: Train Random Forest ───────────────────────────────────
 print("\nTraining Random Forest model...")
 model = RandomForestClassifier(
-    n_estimators=50,   # 50 trees — saves memory vs 100
-    max_depth=20,      # limit depth to save RAM
+    n_estimators=20,   # reduced from 50 to save memory
+    max_depth=10,      # reduced from 20 to save memory
+    max_features=10,   # only use 10 features per tree
     random_state=42,
-    n_jobs=1           # single core — safer for free hosting
+    n_jobs=1
 )
 model.fit(X_train, y_train)
 

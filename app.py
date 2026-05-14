@@ -94,13 +94,14 @@ def predict():
         else:
             true_labels = None
 
-        # ── STEP 4: Encode text columns ───────────────────────────
+        # ── STEP 4: Encode text columns ───────────────────────────────────
         for col in df.select_dtypes(include=['object']).columns:
             if col in encoders:
                 le = encoders[col]
+                known = set(le.classes_)
                 df[col] = df[col].apply(
-                    lambda x: le.transform([str(x)])[0]
-                    if str(x) in le.classes_ else 0
+                    lambda x: int(le.transform([str(x)])[0])
+                    if str(x) in known else 0
                 )
             else:
                 df[col] = 0
