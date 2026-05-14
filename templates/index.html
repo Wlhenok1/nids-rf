@@ -3,201 +3,166 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NIDS — Network Intrusion Detection</title>
-    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@300;400;600;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <title>NIDS — Intrusion Detection</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg:        #020810;
-            --panel:     #060f1e;
-            --border:    #0a2040;
-            --accent:    #00f5ff;
-            --green:     #00ff88;
-            --red:       #ff2d55;
-            --yellow:    #ffd60a;
-            --text:      #c8e0f0;
-            --dim:       #4a6080;
-            --glow:      0 0 20px #00f5ff44;
+            --bg:       #07080d;
+            --surface:  #0d1117;
+            --border:   #1a2030;
+            --accent:   #39ff14;
+            --red:      #ff3860;
+            --blue:     #00b4d8;
+            --yellow:   #ffd166;
+            --text:     #e0e8f0;
+            --muted:    #3d5068;
+            --glow-g:   0 0 24px #39ff1444;
+            --glow-r:   0 0 24px #ff386044;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; }
 
         body {
             background: var(--bg);
             color: var(--text);
-            font-family: 'Rajdhani', sans-serif;
+            font-family: 'Syne', sans-serif;
             min-height: 100vh;
             overflow-x: hidden;
         }
 
-        /* ── Animated grid background ── */
+        /* Noise texture overlay */
         body::before {
             content: '';
             position: fixed;
             inset: 0;
-            background-image:
-                linear-gradient(rgba(0,245,255,0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0,245,255,0.03) 1px, transparent 1px);
-            background-size: 40px 40px;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
             pointer-events: none;
             z-index: 0;
         }
 
-        /* ── Scanline overlay ── */
+        /* Diagonal accent line */
         body::after {
             content: '';
             position: fixed;
-            inset: 0;
-            background: repeating-linear-gradient(
-                0deg,
-                transparent,
-                transparent 2px,
-                rgba(0,0,0,0.08) 2px,
-                rgba(0,0,0,0.08) 4px
-            );
+            top: -200px; right: -100px;
+            width: 3px;
+            height: 800px;
+            background: linear-gradient(180deg, transparent, var(--accent), transparent);
+            transform: rotate(20deg);
+            opacity: 0.15;
             pointer-events: none;
+            z-index: 0;
+        }
+
+        .wrap {
+            position: relative;
             z-index: 1;
-        }
-
-        .container {
-            position: relative;
-            z-index: 2;
-            max-width: 1200px;
+            max-width: 1100px;
             margin: 0 auto;
-            padding: 0 24px 60px;
+            padding: 0 28px 80px;
         }
 
-        /* ── Header ── */
+        /* ── HEADER ─────────────────────────────────────────────── */
         header {
-            padding: 32px 0 24px;
-            border-bottom: 1px solid var(--border);
-            margin-bottom: 32px;
+            padding: 36px 0 28px;
             display: flex;
-            align-items: center;
+            align-items: flex-end;
             justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 48px;
+            gap: 20px;
             flex-wrap: wrap;
-            gap: 16px;
         }
 
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
-
-        .logo-icon {
-            width: 48px;
-            height: 48px;
-            border: 2px solid var(--accent);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 22px;
-            box-shadow: var(--glow), inset 0 0 20px #00f5ff11;
-            animation: pulse 3s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { box-shadow: var(--glow), inset 0 0 20px #00f5ff11; }
-            50% { box-shadow: 0 0 40px #00f5ff66, inset 0 0 30px #00f5ff22; }
-        }
-
-        .logo-text h1 {
-            font-family: 'Orbitron', monospace;
-            font-size: 20px;
-            font-weight: 900;
+        .brand h1 {
+            font-size: clamp(28px, 5vw, 48px);
+            font-weight: 800;
             color: var(--accent);
-            letter-spacing: 3px;
-            text-shadow: 0 0 20px #00f5ff88;
+            letter-spacing: -1px;
+            line-height: 1;
+            text-shadow: var(--glow-g);
         }
 
-        .logo-text p {
-            font-family: 'Share Tech Mono', monospace;
+        .brand p {
+            font-family: 'Space Mono', monospace;
             font-size: 11px;
-            color: var(--dim);
-            letter-spacing: 2px;
-            margin-top: 2px;
-        }
-
-        .status-indicator {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 12px;
-            color: var(--dim);
-        }
-
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--green);
-            box-shadow: 0 0 10px var(--green);
-            animation: blink 2s ease-in-out infinite;
-        }
-
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
-        }
-
-        /* ── Upload Section ── */
-        .upload-card {
-            background: var(--panel);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 32px;
-            margin-bottom: 28px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .upload-card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--accent), transparent);
-        }
-
-        .section-label {
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 11px;
-            color: var(--accent);
+            color: var(--muted);
             letter-spacing: 3px;
             text-transform: uppercase;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            margin-top: 6px;
         }
 
-        .section-label::after {
+        .badge-algo {
+            font-family: 'Space Mono', monospace;
+            font-size: 11px;
+            padding: 6px 14px;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            border-radius: 2px;
+            letter-spacing: 2px;
+            opacity: 0.7;
+        }
+
+        /* ── UPLOAD ─────────────────────────────────────────────── */
+        .upload-section { margin-bottom: 40px; }
+
+        .step-label {
+            font-family: 'Space Mono', monospace;
+            font-size: 10px;
+            color: var(--muted);
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .step-label span {
+            color: var(--accent);
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .step-label::after {
             content: '';
             flex: 1;
             height: 1px;
-            background: linear-gradient(90deg, var(--border), transparent);
+            background: var(--border);
         }
 
-        .upload-zone {
-            border: 1px dashed #0a3060;
-            border-radius: 10px;
-            padding: 40px 24px;
+        .drop-zone {
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: var(--surface);
+            padding: 48px 32px;
             text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            background: #030a14;
             position: relative;
+            cursor: pointer;
+            transition: border-color 0.25s, background 0.25s;
+            overflow: hidden;
         }
 
-        .upload-zone:hover, .upload-zone.drag-over {
+        .drop-zone::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, #39ff1406 0%, transparent 60%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .drop-zone:hover, .drop-zone.over {
             border-color: var(--accent);
-            background: #061525;
-            box-shadow: inset 0 0 40px #00f5ff08;
+            background: #0d1410;
         }
 
-        .upload-zone input[type="file"] {
+        .drop-zone:hover::before, .drop-zone.over::before { opacity: 1; }
+
+        .drop-zone input[type="file"] {
             position: absolute;
             inset: 0;
             opacity: 0;
@@ -206,658 +171,656 @@
             height: 100%;
         }
 
-        .upload-icon {
-            font-size: 36px;
-            margin-bottom: 12px;
-            filter: drop-shadow(0 0 10px #00f5ff44);
+        .drop-icon {
+            font-size: 40px;
+            margin-bottom: 16px;
+            display: block;
+            filter: grayscale(0.3);
         }
 
-        .upload-zone h3 {
-            font-family: 'Orbitron', monospace;
-            font-size: 14px;
-            color: var(--accent);
-            letter-spacing: 2px;
+        .drop-zone h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text);
             margin-bottom: 8px;
         }
 
-        .upload-zone p {
-            font-size: 13px;
-            color: var(--dim);
-            font-family: 'Share Tech Mono', monospace;
+        .drop-zone p {
+            font-family: 'Space Mono', monospace;
+            font-size: 12px;
+            color: var(--muted);
         }
 
-        .file-name {
-            margin-top: 12px;
-            font-family: 'Share Tech Mono', monospace;
+        .file-chosen {
+            margin-top: 14px;
+            font-family: 'Space Mono', monospace;
             font-size: 12px;
-            color: var(--green);
+            color: var(--accent);
             min-height: 18px;
         }
 
-        .analyze-btn {
-            margin-top: 20px;
+        .scan-btn {
+            margin-top: 16px;
             width: 100%;
-            padding: 16px;
-            background: transparent;
-            border: 1px solid var(--accent);
-            color: var(--accent);
-            font-family: 'Orbitron', monospace;
-            font-size: 14px;
-            font-weight: 700;
-            letter-spacing: 4px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .analyze-btn::before {
-            content: '';
-            position: absolute;
-            inset: 0;
+            padding: 18px;
             background: var(--accent);
-            transform: translateX(-100%);
-            transition: transform 0.3s;
-            opacity: 0.1;
+            color: var(--bg);
+            border: none;
+            border-radius: 4px;
+            font-family: 'Syne', sans-serif;
+            font-size: 15px;
+            font-weight: 800;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.1s, box-shadow 0.2s;
         }
 
-        .analyze-btn:hover::before { transform: translateX(0); }
-        .analyze-btn:hover {
-            box-shadow: var(--glow);
-            text-shadow: 0 0 10px var(--accent);
+        .scan-btn:hover {
+            opacity: 0.88;
+            box-shadow: var(--glow-g);
         }
 
-        .analyze-btn:disabled {
-            border-color: var(--dim);
-            color: var(--dim);
+        .scan-btn:active { transform: scale(0.99); }
+
+        .scan-btn:disabled {
+            background: var(--border);
+            color: var(--muted);
             cursor: not-allowed;
+            box-shadow: none;
         }
 
-        .analyze-btn:disabled::before { display: none; }
-
-        /* ── Loading ── */
+        /* ── LOADING ─────────────────────────────────────────────── */
         #loading {
             display: none;
-            text-align: center;
+            margin-top: 20px;
             padding: 20px;
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 13px;
-            color: var(--accent);
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 6px;
         }
 
-        .loading-bar {
-            height: 2px;
+        .loading-text {
+            font-family: 'Space Mono', monospace;
+            font-size: 12px;
+            color: var(--accent);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .dot-flash span {
+            animation: dotFlash 1.4s infinite;
+            opacity: 0;
+        }
+        .dot-flash span:nth-child(2) { animation-delay: 0.2s; }
+        .dot-flash span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes dotFlash {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 1; }
+        }
+
+        .progress-track {
+            height: 3px;
             background: var(--border);
             border-radius: 2px;
-            margin-top: 12px;
             overflow: hidden;
         }
 
-        .loading-fill {
+        .progress-fill {
             height: 100%;
-            background: linear-gradient(90deg, var(--accent), var(--green));
-            animation: loading 1.5s ease-in-out infinite;
+            background: var(--accent);
             border-radius: 2px;
+            animation: sweep 1.8s ease-in-out infinite;
+            box-shadow: var(--glow-g);
         }
 
-        @keyframes loading {
-            0% { width: 0%; margin-left: 0; }
-            50% { width: 60%; margin-left: 20%; }
-            100% { width: 0%; margin-left: 100%; }
+        @keyframes sweep {
+            0%   { width: 0%;   margin-left: 0%; }
+            50%  { width: 55%;  margin-left: 22%; }
+            100% { width: 0%;   margin-left: 100%; }
         }
 
         #errorMsg {
+            margin-top: 14px;
+            font-family: 'Space Mono', monospace;
+            font-size: 12px;
             color: var(--red);
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 13px;
-            margin-top: 12px;
+            min-height: 18px;
             text-align: center;
-            min-height: 20px;
         }
 
-        /* ── Results ── */
+        /* ── RESULTS ─────────────────────────────────────────────── */
         #results { display: none; }
 
-        /* ── Stats Row ── */
-        .stats-grid {
+        /* ── STATS ───────────────────────────────────────────────── */
+        .stats-row {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 16px;
-            margin-bottom: 28px;
+            gap: 2px;
+            margin-bottom: 2px;
         }
 
-        .stat-card {
-            background: var(--panel);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 20px;
+        .stat {
+            background: var(--surface);
+            padding: 24px 20px;
             position: relative;
             overflow: hidden;
-            transition: all 0.3s;
         }
 
-        .stat-card:hover { border-color: var(--accent); }
+        .stat:first-child { border-radius: 6px 0 0 6px; }
+        .stat:last-child  { border-radius: 0 6px 6px 0; }
 
-        .stat-card::after {
+        .stat::after {
             content: '';
             position: absolute;
             bottom: 0; left: 0; right: 0;
-            height: 2px;
+            height: 3px;
         }
 
-        .stat-card.total::after   { background: var(--accent); }
-        .stat-card.normal::after  { background: var(--green); }
-        .stat-card.attack::after  { background: var(--red); }
-        .stat-card.acc::after     { background: var(--yellow); }
+        .stat.s-total::after  { background: var(--blue); }
+        .stat.s-normal::after { background: var(--accent); }
+        .stat.s-attack::after { background: var(--red); }
+        .stat.s-acc::after    { background: var(--yellow); }
 
-        .stat-label-small {
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 10px;
-            color: var(--dim);
-            letter-spacing: 2px;
+        .stat-tag {
+            font-family: 'Space Mono', monospace;
+            font-size: 9px;
+            letter-spacing: 3px;
             text-transform: uppercase;
-            margin-bottom: 8px;
+            color: var(--muted);
+            margin-bottom: 10px;
         }
 
-        .stat-value {
-            font-family: 'Orbitron', monospace;
-            font-size: 36px;
-            font-weight: 900;
+        .stat-num {
+            font-size: 44px;
+            font-weight: 800;
             line-height: 1;
+            letter-spacing: -2px;
         }
 
-        .stat-card.total  .stat-value { color: var(--accent); }
-        .stat-card.normal .stat-value { color: var(--green); }
-        .stat-card.attack .stat-value { color: var(--red); }
-        .stat-card.acc    .stat-value { color: var(--yellow); }
+        .stat.s-total  .stat-num { color: var(--blue); }
+        .stat.s-normal .stat-num { color: var(--accent); text-shadow: var(--glow-g); }
+        .stat.s-attack .stat-num { color: var(--red); text-shadow: var(--glow-r); }
+        .stat.s-acc    .stat-num { color: var(--yellow); }
 
         .stat-sub {
-            font-size: 12px;
-            color: var(--dim);
+            font-family: 'Space Mono', monospace;
+            font-size: 10px;
+            color: var(--muted);
             margin-top: 6px;
-            font-family: 'Share Tech Mono', monospace;
         }
 
-        /* ── Accuracy bar ── */
-        .acc-bar-wrap {
-            background: var(--panel);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 20px 24px;
-            margin-bottom: 28px;
-        }
-
-        .acc-bar-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 12px;
-        }
-
-        .acc-bar-track {
-            height: 8px;
-            background: #030a14;
-            border-radius: 4px;
-            overflow: hidden;
-            border: 1px solid var(--border);
-        }
-
-        .acc-bar-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--accent), var(--green));
-            border-radius: 4px;
-            transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 0 10px #00f5ff44;
-            width: 0%;
-        }
-
-        /* ── Filter Bar ── */
-        .filter-bar {
-            background: var(--panel);
-            border: 1px solid var(--border);
-            border-radius: 10px;
+        /* accuracy bar row */
+        .acc-row {
+            background: var(--surface);
             padding: 16px 20px;
-            margin-bottom: 20px;
+            border-radius: 0 0 6px 6px;
+            margin-bottom: 40px;
+            display: none;
+        }
+
+        .acc-row-inner {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 16px;
+        }
+
+        .acc-label {
+            font-family: 'Space Mono', monospace;
+            font-size: 10px;
+            color: var(--muted);
+            letter-spacing: 2px;
+            white-space: nowrap;
+        }
+
+        .acc-track {
+            flex: 1;
+            height: 4px;
+            background: var(--border);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .acc-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--blue));
+            border-radius: 2px;
+            width: 0%;
+            transition: width 1.4s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: var(--glow-g);
+        }
+
+        .acc-pct {
+            font-family: 'Space Mono', monospace;
+            font-size: 13px;
+            color: var(--yellow);
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        /* ── FILTER ──────────────────────────────────────────────── */
+        .filter-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
             flex-wrap: wrap;
         }
 
-        .filter-label {
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 11px;
-            color: var(--dim);
-            letter-spacing: 2px;
+        .filter-label-txt {
+            font-family: 'Space Mono', monospace;
+            font-size: 10px;
+            color: var(--muted);
+            letter-spacing: 3px;
+            margin-right: 4px;
         }
 
-        .filter-btn {
-            padding: 7px 18px;
-            border-radius: 6px;
+        .f-btn {
+            padding: 8px 20px;
+            border-radius: 3px;
             border: 1px solid var(--border);
             background: transparent;
-            color: var(--dim);
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 14px;
-            font-weight: 600;
+            color: var(--muted);
+            font-family: 'Syne', sans-serif;
+            font-size: 13px;
+            font-weight: 700;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.18s;
             letter-spacing: 1px;
         }
 
-        .filter-btn:hover { border-color: var(--accent); color: var(--accent); }
+        .f-btn:hover { border-color: var(--text); color: var(--text); }
 
-        .filter-btn.active-all {
-            background: #00f5ff18;
-            border-color: var(--accent);
-            color: var(--accent);
-            box-shadow: 0 0 10px #00f5ff22;
-        }
+        .f-btn.fa { border-color: var(--blue);   color: var(--blue);   background: #00b4d810; }
+        .f-btn.fn { border-color: var(--accent);  color: var(--accent); background: #39ff1410; box-shadow: var(--glow-g); }
+        .f-btn.fr { border-color: var(--red);     color: var(--red);    background: #ff386010; box-shadow: var(--glow-r); }
 
-        .filter-btn.active-normal {
-            background: #00ff8818;
-            border-color: var(--green);
-            color: var(--green);
-            box-shadow: 0 0 10px #00ff8822;
-        }
-
-        .filter-btn.active-attack {
-            background: #ff2d5518;
-            border-color: var(--red);
-            color: var(--red);
-            box-shadow: 0 0 10px #ff2d5522;
-        }
-
-        .filter-count {
+        .f-count {
             margin-left: auto;
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 12px;
-            color: var(--dim);
+            font-family: 'Space Mono', monospace;
+            font-size: 11px;
+            color: var(--muted);
         }
 
-        /* ── Table ── */
-        .table-wrap {
-            background: var(--panel);
+        /* ── TABLE ───────────────────────────────────────────────── */
+        .table-card {
+            background: var(--surface);
             border: 1px solid var(--border);
-            border-radius: 12px;
+            border-radius: 6px;
             overflow: hidden;
         }
 
-        .table-header-bar {
-            padding: 16px 20px;
+        .table-topbar {
+            padding: 14px 20px;
             border-bottom: 1px solid var(--border);
             display: flex;
-            align-items: center;
             justify-content: space-between;
+            align-items: center;
         }
 
-        .table-scroll { overflow-x: auto; max-height: 520px; overflow-y: auto; }
+        .table-title {
+            font-family: 'Space Mono', monospace;
+            font-size: 10px;
+            color: var(--muted);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
 
-        .table-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
+        .table-note {
+            font-family: 'Space Mono', monospace;
+            font-size: 10px;
+            color: var(--muted);
+        }
+
+        .table-scroll {
+            overflow-x: auto;
+            max-height: 540px;
+            overflow-y: auto;
+        }
+
+        .table-scroll::-webkit-scrollbar { width: 5px; height: 5px; }
         .table-scroll::-webkit-scrollbar-track { background: var(--bg); }
         .table-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 
-        table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        table { width: 100%; border-collapse: collapse; }
 
-        thead { position: sticky; top: 0; z-index: 10; }
+        thead { position: sticky; top: 0; z-index: 5; }
 
         th {
-            background: #040d1a;
-            padding: 12px 16px;
+            background: #0a0f18;
+            padding: 11px 18px;
             text-align: left;
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 10px;
-            color: var(--dim);
-            letter-spacing: 2px;
+            font-family: 'Space Mono', monospace;
+            font-size: 9px;
+            color: var(--muted);
+            letter-spacing: 3px;
             font-weight: 400;
             border-bottom: 1px solid var(--border);
             white-space: nowrap;
         }
 
         td {
-            padding: 10px 16px;
-            border-bottom: 1px solid #0a1a2a;
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 13px;
+            padding: 10px 18px;
+            border-bottom: 1px solid #0f1820;
+            font-family: 'Space Mono', monospace;
+            font-size: 12px;
             white-space: nowrap;
         }
 
-        tr { transition: background 0.15s; }
-        tr:hover td { background: #061525; }
-
-        .row-index { color: var(--dim); font-size: 11px; }
-
-        /* Badges */
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 4px 12px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: 600;
-            letter-spacing: 1px;
-        }
-
-        .badge-normal {
-            background: #00ff8814;
-            color: var(--green);
-            border: 1px solid #00ff8830;
-        }
-
-        .badge-attack {
-            background: #ff2d5514;
-            color: var(--red);
-            border: 1px solid #ff2d5530;
-        }
-
-        .badge-correct   { color: var(--green); font-size: 16px; }
-        .badge-incorrect { color: var(--red);   font-size: 16px; }
-
-        .actual-normal { color: var(--green); }
-        .actual-attack { color: var(--red); }
-
-        /* ── No results message ── */
-        .no-results {
-            text-align: center;
-            padding: 60px 20px;
-            font-family: 'Share Tech Mono', monospace;
-            color: var(--dim);
-            font-size: 13px;
-        }
-
-        /* ── Row hidden when filtered ── */
+        tr { transition: background 0.12s; }
+        tr:hover td { background: #0d1520; }
         tr.hidden { display: none; }
 
-        /* ── Animate rows in ── */
-        @keyframes fadeInRow {
-            from { opacity: 0; transform: translateX(-8px); }
-            to   { opacity: 1; transform: translateX(0); }
+        .idx { color: var(--muted); font-size: 10px; }
+
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 3px 12px;
+            border-radius: 2px;
+            font-size: 11px;
+            letter-spacing: 1px;
+            font-weight: 700;
         }
 
-        tbody tr { animation: fadeInRow 0.2s ease forwards; }
+        .chip-n {
+            background: #39ff1410;
+            color: var(--accent);
+            border: 1px solid #39ff1430;
+        }
+
+        .chip-a {
+            background: #ff386010;
+            color: var(--red);
+            border: 1px solid #ff386030;
+        }
+
+        .match-ok  { color: var(--accent); font-size: 15px; }
+        .match-no  { color: var(--red);    font-size: 15px; }
+        .act-n     { color: var(--accent); }
+        .act-a     { color: var(--red); }
+
+        .no-rows {
+            text-align: center;
+            padding: 60px 20px;
+            font-family: 'Space Mono', monospace;
+            font-size: 12px;
+            color: var(--muted);
+            display: none;
+        }
+
+        /* ── ANIMATIONS ──────────────────────────────────────────── */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(12px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .stat      { animation: fadeUp 0.4s ease both; }
+        .stat:nth-child(1) { animation-delay: 0.05s; }
+        .stat:nth-child(2) { animation-delay: 0.10s; }
+        .stat:nth-child(3) { animation-delay: 0.15s; }
+        .stat:nth-child(4) { animation-delay: 0.20s; }
+
+        tbody tr {
+            animation: fadeUp 0.15s ease both;
+        }
     </style>
 </head>
 <body>
-<div class="container">
+<div class="wrap">
 
     <!-- Header -->
     <header>
-        <div class="logo">
-            <div class="logo-icon">🛡️</div>
-            <div class="logo-text">
-                <h1>NIDS</h1>
-                <p>NETWORK INTRUSION DETECTION SYSTEM</p>
-            </div>
+        <div class="brand">
+            <h1>N·I·D·S</h1>
+            <p>Network Intrusion Detection System</p>
         </div>
-        <div class="status-indicator">
-            <div class="status-dot"></div>
-            KNN MODEL ACTIVE
-        </div>
+        <div class="badge-algo">RANDOM FOREST // ML</div>
+
     </header>
 
     <!-- Upload -->
-    <div class="upload-card">
-        <div class="section-label">01 // UPLOAD TRAFFIC DATA</div>
-        <div class="upload-zone" id="dropZone">
-            <input type="file" id="csvFile" accept=".csv,.txt">
-            <div class="upload-icon">📡</div>
-            <h3>DROP FILE HERE</h3>
-            <p>Accepts .csv or .txt network traffic files</p>
-            <div class="file-name" id="fileName"></div>
+    <div class="upload-section">
+        <div class="step-label"><span>01</span> Upload Traffic Data</div>
+
+        <div class="drop-zone" id="dropZone">
+            <input type="file" id="fileInput" accept=".csv,.txt">
+            <span class="drop-icon">📡</span>
+            <h3>Drop your file here</h3>
+            <p>Supports .csv and .txt network traffic files</p>
+            <div class="file-chosen" id="fileChosen"></div>
         </div>
-        <button class="analyze-btn" id="analyzeBtn" onclick="analyzeFile()">
-            ⟶ SCAN FOR INTRUSIONS
+
+        <button class="scan-btn" id="scanBtn" onclick="runScan()">
+            Scan for Intrusions
         </button>
+
         <div id="loading">
-            <span>RUNNING KNN CLASSIFICATION...</span>
-            <div class="loading-bar"><div class="loading-fill"></div></div>
+            <div class="loading-text">
+                Running Random Forest classification
+                <span class="dot-flash"><span>.</span><span>.</span><span>.</span></span>
+            </div>
+            <div class="progress-track">
+                <div class="progress-fill"></div>
+            </div>
         </div>
+
         <div id="errorMsg"></div>
     </div>
 
     <!-- Results -->
     <div id="results">
 
+        <div class="step-label"><span>02</span> Scan Results</div>
+
         <!-- Stats -->
-        <div class="section-label" style="margin-bottom:16px;">02 // SCAN RESULTS</div>
-        <div class="stats-grid">
-            <div class="stat-card total">
-                <div class="stat-label-small">TOTAL RECORDS</div>
-                <div class="stat-value" id="totalCount">0</div>
-                <div class="stat-sub">packets analyzed</div>
+        <div class="stats-row" id="statsRow">
+            <div class="stat s-total">
+                <div class="stat-tag">Total Records</div>
+                <div class="stat-num" id="sTotal">0</div>
+                <div class="stat-sub">packets scanned</div>
             </div>
-            <div class="stat-card normal">
-                <div class="stat-label-small">NORMAL TRAFFIC</div>
-                <div class="stat-value" id="normalCount">0</div>
-                <div class="stat-sub" id="normalPct">0% of total</div>
+            <div class="stat s-normal">
+                <div class="stat-tag">Normal Traffic</div>
+                <div class="stat-num" id="sNormal">0</div>
+                <div class="stat-sub" id="sNormalPct">—</div>
             </div>
-            <div class="stat-card attack">
-                <div class="stat-label-small">ATTACKS DETECTED</div>
-                <div class="stat-value" id="attackCount">0</div>
-                <div class="stat-sub" id="attackPct">0% of total</div>
+            <div class="stat s-attack">
+                <div class="stat-tag">Attacks Detected</div>
+                <div class="stat-num" id="sAttack">0</div>
+                <div class="stat-sub" id="sAttackPct">—</div>
             </div>
-            <div class="stat-card acc" id="accCard" style="display:none">
-                <div class="stat-label-small">MODEL ACCURACY</div>
-                <div class="stat-value" id="accValue">0%</div>
+            <div class="stat s-acc" id="sAccCard" style="display:none">
+                <div class="stat-tag">Accuracy</div>
+                <div class="stat-num" id="sAcc">—</div>
                 <div class="stat-sub">vs ground truth</div>
             </div>
         </div>
 
         <!-- Accuracy bar -->
-        <div class="acc-bar-wrap" id="accBarWrap" style="display:none">
-            <div class="acc-bar-header">
-                <span style="color:var(--dim)">CLASSIFICATION ACCURACY</span>
-                <span style="color:var(--yellow)" id="accBarLabel">0%</span>
-            </div>
-            <div class="acc-bar-track">
-                <div class="acc-bar-fill" id="accBar"></div>
+        <div class="acc-row" id="accRow">
+            <div class="acc-row-inner">
+                <span class="acc-label">ACCURACY</span>
+                <div class="acc-track">
+                    <div class="acc-fill" id="accFill"></div>
+                </div>
+                <span class="acc-pct" id="accPct">0%</span>
             </div>
         </div>
 
-        <!-- Filter Bar -->
-        <div class="section-label" style="margin-bottom:16px;">03 // FILTER &amp; INSPECT</div>
-        <div class="filter-bar">
-            <span class="filter-label">SHOW:</span>
-            <button class="filter-btn active-all" id="btnAll"    onclick="setFilter('all')">ALL</button>
-            <button class="filter-btn"            id="btnNormal" onclick="setFilter('normal')">✅ NORMAL</button>
-            <button class="filter-btn"            id="btnAttack" onclick="setFilter('attack')">⚠️ ATTACKS</button>
-            <span class="filter-count" id="filterCount"></span>
+        <!-- Filter -->
+        <div class="step-label" style="margin-top:8px"><span>03</span> Filter &amp; Inspect</div>
+
+        <div class="filter-row">
+            <span class="filter-label-txt">SHOW</span>
+            <button class="f-btn fa" id="btnAll"    onclick="applyFilter('all')">All</button>
+            <button class="f-btn"    id="btnNormal" onclick="applyFilter('normal')">✓ Normal</button>
+            <button class="f-btn"    id="btnAttack" onclick="applyFilter('attack')">⚠ Attacks</button>
+            <span class="f-count" id="fCount"></span>
         </div>
 
         <!-- Table -->
-        <div class="table-wrap">
-            <div class="table-header-bar">
-                <span class="section-label" style="margin:0">TRAFFIC RECORDS</span>
-                <span style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--dim)" id="tableNote">
-                    showing first 500 records
-                </span>
+        <div class="table-card">
+            <div class="table-topbar">
+                <span class="table-title">Traffic Records</span>
+                <span class="table-note" id="tableNote"></span>
             </div>
             <div class="table-scroll">
                 <table>
-                    <thead id="tableHead"></thead>
-                    <tbody id="tableBody"></tbody>
+                    <thead id="tHead"></thead>
+                    <tbody id="tBody"></tbody>
                 </table>
-                <div class="no-results" id="noResults" style="display:none">
-                    NO RECORDS MATCH CURRENT FILTER
-                </div>
+                <div class="no-rows" id="noRows">No records match the current filter.</div>
             </div>
         </div>
 
     </div><!-- /results -->
 
-</div><!-- /container -->
+</div><!-- /wrap -->
 
 <script>
     let currentFilter = 'all';
-    let allRows = [];
 
-    // ── Drag & drop ──────────────────────────────────────────────
-    const dropZone = document.getElementById('dropZone');
-    const fileInput = document.getElementById('csvFile');
+    // ── Drag & drop ───────────────────────────────────────────────
+    const dropZone  = document.getElementById('dropZone');
+    const fileInput = document.getElementById('fileInput');
 
     fileInput.addEventListener('change', () => {
-        if (fileInput.files[0]) {
-            document.getElementById('fileName').textContent = '✓ ' + fileInput.files[0].name;
-        }
+        if (fileInput.files[0])
+            document.getElementById('fileChosen').textContent = '✓ ' + fileInput.files[0].name;
     });
 
-    dropZone.addEventListener('dragover', e => {
-        e.preventDefault();
-        dropZone.classList.add('drag-over');
-    });
-
-    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
-
+    dropZone.addEventListener('dragover',  e => { e.preventDefault(); dropZone.classList.add('over'); });
+    dropZone.addEventListener('dragleave', ()  => dropZone.classList.remove('over'));
     dropZone.addEventListener('drop', e => {
         e.preventDefault();
-        dropZone.classList.remove('drag-over');
+        dropZone.classList.remove('over');
         const file = e.dataTransfer.files[0];
         if (file) {
-            // Manually set the file on the input
             const dt = new DataTransfer();
             dt.items.add(file);
             fileInput.files = dt.files;
-            document.getElementById('fileName').textContent = '✓ ' + file.name;
+            document.getElementById('fileChosen').textContent = '✓ ' + file.name;
         }
     });
 
-    // ── Analyze ───────────────────────────────────────────────────
-    async function analyzeFile() {
+    // ── Scan ──────────────────────────────────────────────────────
+    async function runScan() {
         const file = fileInput.files[0];
         if (!file) { alert('Please select a file first!'); return; }
 
         document.getElementById('loading').style.display  = 'block';
         document.getElementById('results').style.display  = 'none';
-        document.getElementById('errorMsg').innerText     = '';
-        document.getElementById('analyzeBtn').disabled    = true;
+        document.getElementById('errorMsg').textContent   = '';
+        document.getElementById('scanBtn').disabled       = true;
 
-        const formData = new FormData();
-        formData.append('file', file);
+        const fd = new FormData();
+        fd.append('file', file);
 
         try {
-            const res  = await fetch('/predict', { method: 'POST', body: formData });
+            const res  = await fetch('/predict', { method: 'POST', body: fd });
             const data = await res.json();
 
             if (data.error) {
-                document.getElementById('errorMsg').innerText = '❌ ' + data.error;
+                document.getElementById('errorMsg').textContent = '❌ ' + data.error;
                 return;
             }
 
-            renderResults(data);
+            render(data);
 
         } catch (e) {
-            document.getElementById('errorMsg').innerText = '❌ ' + e.message;
+            document.getElementById('errorMsg').textContent = '❌ ' + e.message;
         } finally {
             document.getElementById('loading').style.display = 'none';
-            document.getElementById('analyzeBtn').disabled   = false;
+            document.getElementById('scanBtn').disabled      = false;
         }
     }
 
-    // ── Render ────────────────────────────────────────────────────
-    function renderResults(data) {
-        const total  = data.total;
-        const normal = data.normal;
-        const attack = data.attack;
+    // ── Render results ────────────────────────────────────────────
+    function render(data) {
+        const { total, normal, attack, accuracy, details } = data;
 
-        document.getElementById('totalCount').textContent  = total.toLocaleString();
-        document.getElementById('normalCount').textContent = normal.toLocaleString();
-        document.getElementById('attackCount').textContent = attack.toLocaleString();
-        document.getElementById('normalPct').textContent   = ((normal/total)*100).toFixed(1) + '% of total';
-        document.getElementById('attackPct').textContent   = ((attack/total)*100).toFixed(1) + '% of total';
+        // Stats
+        document.getElementById('sTotal').textContent     = total.toLocaleString();
+        document.getElementById('sNormal').textContent    = normal.toLocaleString();
+        document.getElementById('sAttack').textContent    = attack.toLocaleString();
+        document.getElementById('sNormalPct').textContent = ((normal / total) * 100).toFixed(1) + '% of total';
+        document.getElementById('sAttackPct').textContent = ((attack / total) * 100).toFixed(1) + '% of total';
 
         // Accuracy
-        if (data.accuracy !== null && data.accuracy !== undefined) {
-            document.getElementById('accCard').style.display    = 'block';
-            document.getElementById('accBarWrap').style.display = 'block';
-            document.getElementById('accValue').textContent     = data.accuracy + '%';
-            document.getElementById('accBarLabel').textContent  = data.accuracy + '%';
+        if (accuracy !== null && accuracy !== undefined) {
+            document.getElementById('sAccCard').style.display = 'block';
+            document.getElementById('accRow').style.display   = 'block';
+            document.getElementById('sAcc').textContent       = accuracy + '%';
+            document.getElementById('accPct').textContent     = accuracy + '%';
             setTimeout(() => {
-                document.getElementById('accBar').style.width = data.accuracy + '%';
+                document.getElementById('accFill').style.width = accuracy + '%';
             }, 200);
         }
 
-        // Build table
-        const hasActual = data.details.length > 0 && data.details[0].actual !== undefined;
-
-        document.getElementById('tableHead').innerHTML = `
+        // Table header
+        const hasActual = details.length > 0 && details[0].actual !== undefined;
+        document.getElementById('tHead').innerHTML = `
             <tr>
                 <th>#</th>
                 <th>PREDICTION</th>
                 ${hasActual ? '<th>ACTUAL</th><th>MATCH</th>' : ''}
-            </tr>
-        `;
+            </tr>`;
 
-        allRows = data.details;
-        renderTable(allRows);
-        setFilter('all');
-
-        document.getElementById('tableNote').textContent =
-            `showing ${data.details.length} of ${total.toLocaleString()} records`;
-
-        document.getElementById('results').style.display = 'block';
-    }
-
-    // ── Render Table ──────────────────────────────────────────────
-    function renderTable(rows) {
-        const hasActual = rows.length > 0 && rows[0].actual !== undefined;
-        const tbody = document.getElementById('tableBody');
+        // Table body
+        const tbody = document.getElementById('tBody');
         tbody.innerHTML = '';
+        details.forEach(row => {
+            const isAtk  = row.prediction === 'attack';
+            const chip   = isAtk
+                ? `<span class="chip chip-a">⚠ ATTACK</span>`
+                : `<span class="chip chip-n">✓ NORMAL</span>`;
 
-        rows.forEach(row => {
-            const isAttack = row.prediction === 'attack';
-            const badge    = isAttack
-                ? `<span class="badge badge-attack">⚠ ATTACK</span>`
-                : `<span class="badge badge-normal">✓ NORMAL</span>`;
-
-            let actualCell = '';
-            let matchCell  = '';
-
+            let extra = '';
             if (hasActual) {
-                const actualIsAttack = row.actual === 'attack';
-                actualCell = `<td class="${actualIsAttack ? 'actual-attack' : 'actual-normal'}">${row.actual.toUpperCase()}</td>`;
-                matchCell  = `<td><span class="${row.correct === '✓' ? 'badge-correct' : 'badge-incorrect'}">${row.correct === '✓' ? '✓' : '✗'}</span></td>`;
+                const actClass = row.actual === 'attack' ? 'act-a' : 'act-n';
+                const matchCls = row.correct === '✓'    ? 'match-ok' : 'match-no';
+                extra = `<td class="${actClass}">${row.actual.toUpperCase()}</td>
+                         <td class="${matchCls}">${row.correct}</td>`;
             }
 
             const tr = document.createElement('tr');
             tr.dataset.type = row.prediction;
-            tr.innerHTML = `
-                <td class="row-index">${row.index}</td>
-                <td>${badge}</td>
-                ${actualCell}
-                ${matchCell}
-            `;
+            tr.innerHTML = `<td class="idx">${row.index}</td><td>${chip}</td>${extra}`;
             tbody.appendChild(tr);
         });
+
+        document.getElementById('tableNote').textContent =
+            `showing ${details.length.toLocaleString()} of ${total.toLocaleString()} records`;
+
+        applyFilter('all');
+        document.getElementById('results').style.display = 'block';
+        document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
     // ── Filter ────────────────────────────────────────────────────
-    function setFilter(type) {
+    function applyFilter(type) {
         currentFilter = type;
 
-        // Update buttons
-        document.getElementById('btnAll').className    = 'filter-btn' + (type === 'all'    ? ' active-all'    : '');
-        document.getElementById('btnNormal').className = 'filter-btn' + (type === 'normal' ? ' active-normal' : '');
-        document.getElementById('btnAttack').className = 'filter-btn' + (type === 'attack' ? ' active-attack' : '');
+        document.getElementById('btnAll').className    = 'f-btn' + (type === 'all'    ? ' fa' : '');
+        document.getElementById('btnNormal').className = 'f-btn' + (type === 'normal' ? ' fn' : '');
+        document.getElementById('btnAttack').className = 'f-btn' + (type === 'attack' ? ' fr' : '');
 
-        // Show/hide rows
-        const rows = document.querySelectorAll('#tableBody tr');
         let visible = 0;
-
-        rows.forEach(row => {
-            const show = type === 'all' || row.dataset.type === type;
-            row.classList.toggle('hidden', !show);
+        document.querySelectorAll('#tBody tr').forEach(tr => {
+            const show = type === 'all' || tr.dataset.type === type;
+            tr.classList.toggle('hidden', !show);
             if (show) visible++;
         });
 
-        // Update count
         const label = type === 'all' ? 'all records' : type === 'normal' ? 'normal only' : 'attacks only';
-        document.getElementById('filterCount').textContent = `${visible} records — ${label}`;
+        document.getElementById('fCount').textContent = `${visible.toLocaleString()} records — ${label}`;
 
-        // No results message
-        document.getElementById('noResults').style.display = visible === 0 ? 'block' : 'none';
+        document.getElementById('noRows').style.display = visible === 0 ? 'block' : 'none';
     }
 </script>
 </body>
