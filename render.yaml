@@ -1,6 +1,7 @@
 services:
   - type: web
-    name: nids-app
+    name: nids-rf
     env: python
-    buildCommand: pip install -r requirements.txt && python train_model.py
+    pythonVersion: "3.11.0"
+    buildCommand: pip install --upgrade pip setuptools wheel && pip install -r requirements.txt && python train_model.py
     startCommand: gunicorn app:app
